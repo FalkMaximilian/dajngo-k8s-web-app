@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+
+# This can be anyhting I want
+metadata:
+  name: django-k8s-web-deployment
+  labels:
+    app: django-k8s-web-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: django-k8s-web-deployment
+  template:
+    metadata:
+      labels:
+        app: django-k8s-web-deployment
+    spec:
+      containers:
+        - name: django-k8s-web
+          image: registry.digitalocean.com/max-falk-containers/django-k8s-web:latest
+          envFrom:
+            - secretRef:
+                name: django-k8s-web-prod-env
+          env:
+            - name: PORT
+              value: "8002"
+          ports:
+          - containerPort: 80
+      imagePullSecrets:
+        - name: max-falk-containers
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-k8s-web-service
+  annotations:
+    service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
+    service.beta.kubernetes.io/do-loadbalancer-tls-ports: "443"
+    service.beta.kubernetes.io/do-loadbalancer-certificate-id: "dc80c58f-74a9-4404-a415-34842237260d"
+    service.beta.kubernetes.io/do-loadbalancer-disable-lets-encrypt-dns-records: "false"
+    service.beta.kubernetes.io/do-loadbalancer-redirect-http-to-https: "true"
+    service.beta.kubernetes.io/do-loadbalancer-hostname: "www.falkmaximilian.de"
+    # service.beta.kubernetes.io/do-loadbalancer-healthcheck-port: "80"
+    # service.beta.kubernetes.io/do-loadbalancer-healthcheck-protocol: "http"
+    # service.beta.kubernetes.io/do-loadbalancer-healthcheck-path: "/health"
+    # service.beta.kubernetes.io/do-loadbalancer-healthcheck-check-interval-seconds: "3"
+    # service.beta.kubernetes.io/do-loadbalancer-healthcheck-response-timeout-seconds: "5"
+    # service.beta.kubernetes.io/do-loadbalancer-healthcheck-unhealthy-threshold: "3"
+    # service.beta.kubernetes.io/do-loadbalancer-healthcheck-healthy-threshold: "5"
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8002
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 8002
+  selector:
+    app: django-k8s-web-deployment

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+
+# This can be anyhting I want
+metadata:
+  name: nginx-deployment
+
+spec:
+  # If we need more than one deployments of the nginx service
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-deployment
+  template:
+    metadata:
+      labels:
+        app: nginx-deployment
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80

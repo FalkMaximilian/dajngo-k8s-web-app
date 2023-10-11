@@ -1,0 +1,48 @@
+version: "3.9"
+services:
+  # web:
+  #   depends_on:
+  #     - postgres_db
+  #   build:
+  #     context: ./web
+  #     dockerfile: Dockerfile
+    
+  #   # Name of the Docker Container image that is being created
+  #   image: django-k8s
+  #   environment:
+  #     - PORT=8020
+  #   env_file:
+  #     - ./web/.env
+  #   ports:
+  #     - "8001:8020"
+  #   command: sh -c "chmod +x /app/migrate.sh && sh /app/migrate.sh && /app/entrypoint.sh"
+  # This name has to be the same as in the env file for POSTGRES_HOST
+  postgres_db:
+    image: postgres
+    restart: always
+    command: -p 5434
+    env_file:
+      - ./web/.env
+    # Also same as in .env file -> makes is possible for other services in compose to access via this port
+    expose:
+      - 5434
+    # Maps the port in this docker container to the system port. ANY process on this system can access this db 
+    ports:
+      - "5434:5434"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  redis_db:
+    image: redis
+    restart: always
+    expose:
+      - 6388
+    ports:
+      - "6388:6388"
+    volumes:
+      - redis_data:/data
+    entrypoint: redis-server --appendonly yes --port 6388
+
+  
+volumes:
+  postgres_data:
+  redis_data:

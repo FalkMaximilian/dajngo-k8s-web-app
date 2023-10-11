@@ -1,6 +1,5 @@
-web/.env
-.kube/
-web/.env.prod
+.env
+.env.prod
 
 
 # Byte-compiled / optimized / DLL files
