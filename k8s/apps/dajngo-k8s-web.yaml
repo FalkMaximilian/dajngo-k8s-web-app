@@ -19,6 +19,7 @@ spec:
       containers:
         - name: django-k8s-web
           image: registry.digitalocean.com/max-falk-containers/django-k8s-web:latest
+          imagePullPolicy: Always
           envFrom:
             - secretRef:
                 name: django-k8s-web-prod-env
