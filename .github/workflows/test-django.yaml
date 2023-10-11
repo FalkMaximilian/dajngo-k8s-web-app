@@ -1,4 +1,4 @@
-name: Django CI
+name: Django CI & Postgres Test
 
 # When the workflow will be run
 on:
