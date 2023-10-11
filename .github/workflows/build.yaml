@@ -50,10 +50,8 @@ jobs:
         DJANGO_SUPERUSER_PASSWORD=${{ secrets.DJANGO_SUPERUSER_PASSWORD }}
         DJANGO_SUPERUSER_EMAIL=${{ secrets.DJANGO_SUPERUSER_EMAIL }}
         DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
-
         ENV_ALLOWED_HOST=${{ secrets.ENV_ALLOWED_HOST }}
         ENV_ALLOWED_HOST_WWW=${{ secrets.ENV_ALLOWED_HOST_WWW }}
-
         POSTGRES_READY=${{ secrets.POSTGRES_READY}}
         POSTGRES_DB=${{ secrets.POSTGRES_DB }}
         POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
@@ -66,7 +64,7 @@ jobs:
         kubectl create secret generic django-k8s-web-prod-env --from-env-file=web/.env.prod
     - name: Update deployment image
       run: |
-        kubectl set image deployment/django-k8s-web-deployment django-k8s-web=registry.digitalocean.com/max-falk-containers/django-k8s-web:${GITHUB_SHA::7}
+        kubectl set image deployment/django-k8s-web-deployment django-k8s-web=registry.digitalocean.com/max-falk-containers/django-k8s-web:${GITHUB_SHA::7}-${GITHUB_RUN_ID}
     - name: Wait for rollout to finish
       run: |
         kubectl rollout status deployment/django-k8s-web-deployment
